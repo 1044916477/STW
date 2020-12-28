@@ -95,41 +95,41 @@ proc wait_for_process(name: string, interval: int = 1500): Process {.exportpy.} 
     except:
       sleep(interval)
 
-proc close(p: Process): bool {.discardable, exportpy.} = 
-  CloseHandle(p.handle) == 1
+proc close(self: Process): bool {.discardable, exportpy.} = 
+  CloseHandle(self.handle) == 1
 
-proc read(p: Process, address: ByteAddress, t: typedesc): t =
+proc read(self: Process, address: ByteAddress, t: typedesc): t =
   if ReadProcessMemory(
-    p.handle, cast[pointer](address), result.addr, cast[SIZE_T](sizeof(t)), nil
+    self.handle, cast[pointer](address), result.addr, cast[SIZE_T](sizeof(t)), nil
   ) == 0:
     memoryErr("Read", address)
 
-proc write(p: Process, address: ByteAddress, data: any) =
+proc write(self: Process, address: ByteAddress, data: any) =
   if WriteProcessMemory(
-    p.handle, cast[pointer](address), data.unsafeAddr, cast[SIZE_T](sizeof(data)), nil
+    self.handle, cast[pointer](address), data.unsafeAddr, cast[SIZE_T](sizeof(data)), nil
   ) == 0:
     memoryErr("Write", address)
 
-proc writeArray[T](p: Process, address: ByteAddress, data: openArray[T]) =
+proc writeArray[T](self: Process, address: ByteAddress, data: openArray[T]) =
   if WriteProcessMemory(
-    p.handle, cast[pointer](address), data.unsafeAddr, cast[SIZE_T](sizeof(T) * data.len), nil
+    self.handle, cast[pointer](address), data.unsafeAddr, cast[SIZE_T](sizeof(T) * data.len), nil
   ) == 0:
     memoryErr("Write", address)
 
-proc dma_addr(p: Process, baseAddr: ByteAddress, offsets: openArray[int]): ByteAddress {.exportpy.} =
-  result = p.read(baseAddr, ByteAddress)
+proc dma_addr(self: Process, baseAddr: ByteAddress, offsets: openArray[int]): ByteAddress {.exportpy.} =
+  result = self.read(baseAddr, ByteAddress)
   for o in offsets:
     inc result, o
-    result = p.read(result, ByteAddress)
+    result = self.read(result, ByteAddress)
 
-proc readSeq(p: Process, address: ByteAddress, size: SIZE_T,  t: typedesc = byte): seq[t] =
+proc readSeq(self: Process, address: ByteAddress, size: SIZE_T,  t: typedesc = byte): seq[t] =
   result = newSeq[t](size)
   if ReadProcessMemory(
-    p.handle, cast[pointer](address), result[0].addr, size * sizeof(t), nil
+    self.handle, cast[pointer](address), result[0].addr, size * sizeof(t), nil
   ) == 0:
     memoryErr("readSeq", address)
 
-proc aob_scan(p: Process, pattern: string, module: Mod = Mod()): ByteAddress {.exportpy.} =
+proc aob_scan(self: Process, pattern: string, module: Mod = Mod()): ByteAddress {.exportpy.} =
   var scanBegin, scanEnd: int
   var rePattern = re(
     pattern.toUpper().multiReplace((" ", ""), ("?", ".."), ("*", "..")),
@@ -146,66 +146,66 @@ proc aob_scan(p: Process, pattern: string, module: Mod = Mod()): ByteAddress {.e
     scanEnd = cast[int](sysInfo.lpMaximumApplicationAddress)
 
   var mbi = MEMORY_BASIC_INFORMATION()
-  VirtualQueryEx(p.handle, cast[LPCVOID](scanBegin), mbi.addr, cast[SIZE_T](sizeof(mbi)))
+  VirtualQueryEx(self.handle, cast[LPCVOID](scanBegin), mbi.addr, cast[SIZE_T](sizeof(mbi)))
 
   var curAddr = scanBegin
   while curAddr < scanEnd:
     curAddr += mbi.RegionSize.int
-    VirtualQueryEx(p.handle, cast[LPCVOID](curAddr), mbi.addr, cast[SIZE_T](sizeof(mbi)))
+    VirtualQueryEx(self.handle, cast[LPCVOID](curAddr), mbi.addr, cast[SIZE_T](sizeof(mbi)))
 
     if mbi.State != MEM_COMMIT or mbi.State == PAGE_NOACCESS: continue
 
     var oldProt: DWORD
-    VirtualProtectEx(p.handle, cast[LPCVOID](curAddr), mbi.RegionSize, PAGE_EXECUTE_READWRITE, oldProt.addr)
-    let byteString = cast[string](p.readSeq(cast[ByteAddress](mbi.BaseAddress), mbi.RegionSize)).toHex()
-    VirtualProtectEx(p.handle, cast[LPCVOID](curAddr), mbi.RegionSize, oldProt, nil)
+    VirtualProtectEx(self.handle, cast[LPCVOID](curAddr), mbi.RegionSize, PAGE_EXECUTE_READWRITE, oldProt.addr)
+    let byteString = cast[string](self.readSeq(cast[ByteAddress](mbi.BaseAddress), mbi.RegionSize)).toHex()
+    VirtualProtectEx(self.handle, cast[LPCVOID](curAddr), mbi.RegionSize, oldProt, nil)
 
     let r = byteString.findBounds(rePattern)
     if r.first != -1:
       return r.first div 2 + curAddr
 
-proc nop_code(p: Process, address: ByteAddress, length: int = 1) {.exportpy.} =
+proc nop_code(self: Process, address: ByteAddress, length: int = 1) {.exportpy.} =
   var oldProt: int32
-  discard VirtualProtectEx(p.handle, cast[LPCVOID](address), length, 0x40, oldProt.addr)
+  discard VirtualProtectEx(self.handle, cast[LPCVOID](address), length, 0x40, oldProt.addr)
   for i in 0..length-1:
-    p.write(address + i, 0x90.byte)
-  discard VirtualProtectEx(p.handle, cast[LPCVOID](address), length, oldProt, nil)
+    self.write(address + i, 0x90.byte)
+  discard VirtualProtectEx(self.handle, cast[LPCVOID](address), length, oldProt, nil)
 
-proc inject_dll(p: Process, dllPath: string) {.exportpy.} =
-  let vPtr = VirtualAllocEx(p.handle, nil, dllPath.len(), MEM_RESERVE or MEM_COMMIT, PAGE_EXECUTE_READWRITE)
-  WriteProcessMemory(p.handle, vPtr, dllPath[0].unsafeAddr, dllPath.len, nil)
-  if CreateRemoteThread(p.handle, nil, 0, cast[LPTHREAD_START_ROUTINE](LoadLibraryA), vPtr, 0, nil) == 0:
+proc inject_dll(self: Process, dllPath: string) {.exportpy.} =
+  let vPtr = VirtualAllocEx(self.handle, nil, dllPath.len(), MEM_RESERVE or MEM_COMMIT, PAGE_EXECUTE_READWRITE)
+  WriteProcessMemory(self.handle, vPtr, dllPath[0].unsafeAddr, dllPath.len, nil)
+  if CreateRemoteThread(self.handle, nil, 0, cast[LPTHREAD_START_ROUTINE](LoadLibraryA), vPtr, 0, nil) == 0:
     raise newException(IOError, fmt"Injection failed [Error: {GetLastError()}]")
 
-proc page_protection(p: Process, address: ByteAddress, newProtection: int32 = 0x40): int32 {.exportpy.} =
+proc page_protection(self: Process, address: ByteAddress, newProtection: int32 = 0x40): int32 {.exportpy.} =
   var mbi = MEMORY_BASIC_INFORMATION()
-  discard VirtualQueryEx(p.handle, cast[LPCVOID](address), mbi.addr, cast[SIZE_T](sizeof(mbi)))
-  discard VirtualProtectEx(p.handle, cast[LPCVOID](address), mbi.RegionSize, newProtection, result.addr)
+  discard VirtualQueryEx(self.handle, cast[LPCVOID](address), mbi.addr, cast[SIZE_T](sizeof(mbi)))
+  discard VirtualProtectEx(self.handle, cast[LPCVOID](address), mbi.RegionSize, newProtection, result.addr)
 
-proc read_string(p: Process, address: ByteAddress): string {.exportpy.} =
-  let r = p.read(address, array[0..100, char])
+proc read_string(self: Process, address: ByteAddress): string {.exportpy.} =
+  let r = self.read(address, array[0..100, char])
   result = $cast[cstring](r[0].unsafeAddr)
-proc read_int(p: Process, address: ByteAddress): int32 {.exportpy.} = 
-  result = p.read(address, int32)
-proc read_ints(p: Process, address: ByteAddress, size: int32): seq[int32] {.exportpy.} =
-  result = p.readSeq(address, size, int32)
-proc read_float(p: Process, address: ByteAddress): float32 {.exportpy.} = 
-  result = p.read(address, float32)
-proc read_floats(p: Process, address: ByteAddress, size: int32): seq[float32] {.exportpy.} = 
-  result = p.readSeq(address, size, float32)
-proc read_byte(p: Process, address: ByteAddress): byte {.exportpy.} = 
-  result = p.read(address, byte)
-proc read_bytes(p: Process, address: ByteAddress, size: int32): seq[byte] {.exportpy.} =
-  result = p.readSeq(address, size, byte)
+proc read_int(self: Process, address: ByteAddress): int32 {.exportpy.} = 
+  result = self.read(address, int32)
+proc read_ints(self: Process, address: ByteAddress, size: int32): seq[int32] {.exportpy.} =
+  result = self.readSeq(address, size, int32)
+proc read_float(self: Process, address: ByteAddress): float32 {.exportpy.} = 
+  result = self.read(address, float32)
+proc read_floats(self: Process, address: ByteAddress, size: int32): seq[float32] {.exportpy.} = 
+  result = self.readSeq(address, size, float32)
+proc read_byte(self: Process, address: ByteAddress): byte {.exportpy.} = 
+  result = self.read(address, byte)
+proc read_bytes(self: Process, address: ByteAddress, size: int32): seq[byte] {.exportpy.} =
+  result = self.readSeq(address, size, byte)
 
-template write_data = p.write(address, data)
-template write_datas = p.writeArray(address, data)
-proc write_int(p: Process, address: ByteAddress, data: cint) {.exportpy.} = write_data
-proc write_ints(p: Process, address: ByteAddress, data: openArray[cint]) {.exportpy.} = write_datas
-proc write_float(p: Process, address: ByteAddress, data: cfloat) {.exportpy.} = write_data
-proc write_floats(p: Process, address: ByteAddress, data: openArray[cfloat]) {.exportpy.} = write_datas
-proc write_byte(p: Process, address: ByteAddress, data: byte) {.exportpy.} = write_data
-proc write_bytes(p: Process, address: ByteAddress, data: openArray[byte]) {.exportpy.} = write_datas
+template write_data = self.write(address, data)
+template write_datas = self.writeArray(address, data)
+proc write_int(self: Process, address: ByteAddress, data: cint) {.exportpy.} = write_data
+proc write_ints(self: Process, address: ByteAddress, data: openArray[cint]) {.exportpy.} = write_datas
+proc write_float(self: Process, address: ByteAddress, data: cfloat) {.exportpy.} = write_data
+proc write_floats(self: Process, address: ByteAddress, data: openArray[cfloat]) {.exportpy.} = write_datas
+proc write_byte(self: Process, address: ByteAddress, data: byte) {.exportpy.} = write_data
+proc write_bytes(self: Process, address: ByteAddress, data: openArray[byte]) {.exportpy.} = write_datas
 
 #[
   overlay
