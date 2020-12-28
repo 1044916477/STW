@@ -1,5 +1,6 @@
 #[
   PyMeow - Python Game Hacking Library
+  v1.3
   Meow @ 2020
 ]#
 
@@ -252,6 +253,7 @@ proc overlay_init(target: string = "Fullscreen", borderOffset: int32 = 25): Over
   glDisable(GL_TEXTURE_2D)
 
   result.hwnd = cast[int](getWin32Window(OverlayWindow))
+  # Note: GLFW_MOUSE_PASSTHROUGH window hint will be supported in GLFW 3.4
   SetWindowLong(result.hwnd, GWL_EXSTYLE, GetWindowLongW(result.hwnd, GWL_EXSTYLE) or WS_EX_TRANSPARENT)
   if target != "Fullscreen":
     SetWindowPos(result.hwnd, -1, rect.left, rect.top + borderOffset, 0, 0, 0x0001)
