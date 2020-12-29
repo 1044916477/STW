@@ -63,7 +63,7 @@ class Entity:
                  self.info["pos3d"][2] * v_matrix[11] + v_matrix[15]
 
         if clip_w < 0.1:
-            return
+            raise Exception("WTS")
 
         nds_x = clip_x / clip_w
         nds_y = clip_y / clip_w
@@ -85,8 +85,11 @@ def main():
             ent_buffer = read_ints(mem, read_int(mem, Pointer.entity_list), player_count)[1:]
             v_matrix = read_floats(mem, Pointer.view_matrix, 16)
             for addr in ent_buffer:
-                ent_obj = Entity(addr, mem)
-                ent_obj.calc_wts(overlay, v_matrix)
+                try:
+                    ent_obj = Entity(addr, mem)
+                    ent_obj.calc_wts(overlay, v_matrix)
+                except:
+                    continue
 
                 if ent_obj.info["pos2d"] and ent_obj.info["hp"] > 0:
                     ent_color = Colors.blue if ent_obj.info['team'] == 1 else Colors.red
