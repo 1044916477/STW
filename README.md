@@ -1,7 +1,5 @@
 # PyMeow
 ##### Python Game Hacking Library
-###### credits to: [nimpy](https://github.com/yglukhov/nimpy), [winim](https://github.com/khchen/winim), [nimgl](https://github.com/nimgl/nimgl)
-
 
 ## [CSGo ESP](https://github.com/Sann0/PyMeow/blob/master/examples/csgo_esp.py):
 ![Alt text](https://i.ibb.co/WtcRsWv/csgo-py.png)
@@ -64,3 +62,5 @@
   mouse_click()
   mouse_move(overlay: Overlay, x, y: float)
 ```
+
+###### credits to: [nimpy](https://github.com/yglukhov/nimpy), [winim](https://github.com/khchen/winim), [nimgl](https://github.com/nimgl/nimgl)
