@@ -1,5 +1,5 @@
 # PyMeow
-##### Python Game Hacking Library created with [Nim](https://nim-lang.org)
+##### Python Library for external Game Hacking created with [Nim](https://nim-lang.org)
 
 ## [CSGo ESP](https://github.com/Sann0/PyMeow/blob/master/examples/csgo_esp.py):
 ![Alt text](https://i.ibb.co/WtcRsWv/csgo-py.png)
