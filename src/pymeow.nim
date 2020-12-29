@@ -1,6 +1,6 @@
 #[
   PyMeow - Python Game Hacking Library
-  v1.3
+  v1.4
   Meow @ 2020
 ]#
 
@@ -83,9 +83,9 @@ proc process_by_name(name: string): Process {.exportpy.} =
       p.handle = OpenProcess(PROCESS_ALL_ACCESS, 0, p.pid).DWORD
       if p.handle != 0:
         return p
-      raise newException(IOError, fmt"Unable to open Process [Pid: {p.pid}] [Error code: {GetLastError()}]")
+      raise newException(Exception, fmt"Unable to open Process [Pid: {p.pid}] [Error code: {GetLastError()}]")
       
-  raise newException(IOError, fmt"Process '{name}' not found")
+  raise newException(Exception, fmt"Process '{name}' not found")
 
 proc wait_for_process(name: string, interval: int = 1500): Process {.exportpy.} =
   while true:
@@ -100,19 +100,19 @@ proc close(self: Process): bool {.discardable, exportpy.} =
 
 proc read(self: Process, address: ByteAddress, t: typedesc): t =
   if ReadProcessMemory(
-    self.handle, cast[pointer](address), result.addr, cast[SIZE_T](sizeof(t)), nil
+    self.handle, cast[pointer](address), result.addr, sizeof(t), nil
   ) == 0:
     memoryErr("Read", address)
 
 proc write(self: Process, address: ByteAddress, data: any) =
   if WriteProcessMemory(
-    self.handle, cast[pointer](address), data.unsafeAddr, cast[SIZE_T](sizeof(data)), nil
+    self.handle, cast[pointer](address), data.unsafeAddr, sizeof(data), nil
   ) == 0:
     memoryErr("Write", address)
 
 proc writeArray[T](self: Process, address: ByteAddress, data: openArray[T]) =
   if WriteProcessMemory(
-    self.handle, cast[pointer](address), data.unsafeAddr, cast[SIZE_T](sizeof(T) * data.len), nil
+    self.handle, cast[pointer](address), data.unsafeAddr, sizeof(T) * data.len, nil
   ) == 0:
     memoryErr("Write", address)
 
@@ -175,7 +175,7 @@ proc inject_dll(self: Process, dllPath: string) {.exportpy.} =
   let vPtr = VirtualAllocEx(self.handle, nil, dllPath.len(), MEM_RESERVE or MEM_COMMIT, PAGE_EXECUTE_READWRITE)
   WriteProcessMemory(self.handle, vPtr, dllPath[0].unsafeAddr, dllPath.len, nil)
   if CreateRemoteThread(self.handle, nil, 0, cast[LPTHREAD_START_ROUTINE](LoadLibraryA), vPtr, 0, nil) == 0:
-    raise newException(IOError, fmt"Injection failed [Error: {GetLastError()}]")
+    raise newException(Exception, fmt"Injection failed [Error: {GetLastError()}]")
 
 proc page_protection(self: Process, address: ByteAddress, newProtection: int32 = 0x40): int32 {.exportpy.} =
   var mbi = MEMORY_BASIC_INFORMATION()
@@ -230,7 +230,7 @@ proc overlay_init(target: string = "Fullscreen", borderOffset: int32 = 25): Over
   else:
     let hwndWin = FindWindowA(nil, target)
     if hwndWin == 0:
-      raise newException(IOError, fmt"Window ({target}) not found")
+      raise newException(Exception, fmt"Window ({target}) not found")
 
     GetWindowRect(hwndWin, rect.addr)
     result.width = rect.right.float32 - rect.left.float32
@@ -386,7 +386,7 @@ proc triangle(x1, y1, x2, y2, x3, y3: float, color: array[0..2, float32], alpha:
 ]#
 
 proc set_foreground(winTitle: string): bool {.discardable, exportpy.} = 
-  return SetForeGroundWindow(FindWindowA(nil, winTitle))
+  SetForeGroundWindow(FindWindowA(nil, winTitle))
 
 proc mouse_move(self: Overlay, x, y: float32) {.exportpy.} =
   var input: INPUT
