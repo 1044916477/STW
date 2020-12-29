@@ -223,6 +223,8 @@ proc write_float(self: Process, address: ByteAddress, data: cfloat) {.exportpy.}
 proc write_floats(self: Process, address: ByteAddress, data: openArray[cfloat]) {.exportpy.} = write_datas
 proc write_byte(self: Process, address: ByteAddress, data: byte) {.exportpy.} = write_data
 proc write_bytes(self: Process, address: ByteAddress, data: openArray[byte]) {.exportpy.} = write_datas
+proc write_vec2(self: Process, address: ByteAddress, data: Vec2) {.exportpy.} = write_data
+proc write_vec3(self: Process, address: ByteAddress, data: Vec3) {.exportpy.} = write_data
 
 #[
   overlay
