@@ -132,10 +132,15 @@ proc readSeq(self: Process, address: ByteAddress, size: SIZE_T,  t: typedesc = b
     memoryErr("readSeq", address)
 
 proc aob_scan(self: Process, pattern: string, module: Mod = Mod()): ByteAddress {.exportpy.} =
+  let allowed_protections = [
+    PAGE_EXECUTE_READ, PAGE_EXECUTE_READWRITE, 
+    PAGE_READWRITE, PAGE_READONLY
+  ]
+
   var 
     scanBegin, scanEnd: int
     rePattern = re(
-      pattern.toUpper().multiReplace((" ", ""), ("?", ".."), ("*", "..")),
+      pattern.toUpper().multiReplace((" ", ""), ("??", "?"), ("?", ".."), ("*", "..")),
       {reIgnoreCase, reDotAll}
     )
 
@@ -156,7 +161,7 @@ proc aob_scan(self: Process, pattern: string, module: Mod = Mod()): ByteAddress 
     curAddr += mbi.RegionSize.int
     VirtualQueryEx(self.handle, cast[LPCVOID](curAddr), mbi.addr, cast[SIZE_T](sizeof(mbi)))
 
-    if mbi.State != MEM_COMMIT or mbi.State == PAGE_NOACCESS: continue
+    if mbi.State != MEM_COMMIT or mbi.State notin allowed_protections: continue
 
     var oldProt: DWORD
     VirtualProtectEx(self.handle, cast[LPCVOID](curAddr), mbi.RegionSize, PAGE_EXECUTE_READWRITE, oldProt.addr)
