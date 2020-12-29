@@ -1,29 +1,20 @@
 from pymeow import *
 
+
 class Pointer:
-    player_count = 0x0050F500
-    entity_list = 0x0050F4F8
     local_player = 0x00509B74
-    view_matrix = 0x00501AE8
-    console = 0x4090F0
-    game_mode = 0x50F49C
 
 
 class Offsets:
-    name = 0x225
     health = 0xF8
     armor = 0xFC
-    team = 0x32C
-    viewX = 0x40
-    viewY = 0x44
     rifle_ammo = 0x150
     rifle_clip = 0x128
     pistol_ammo = 0x13C
     pistol_clip = 0x114
     nades = 0x158
-    force_attack = 0x224
-    viewable = 0x408
     recoil = 0xEE444
+
 
 def main():
     ac_proc = process_by_name("ac_client.exe")
@@ -78,6 +69,7 @@ def main():
         circle(overlay["midX"], overlay["midY"], 5, [255, 0, 0])
 
         overlay_update(overlay)
+
 
 if __name__ == '__main__':
     main()
