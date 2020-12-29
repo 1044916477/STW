@@ -39,17 +39,12 @@ type
   Memory
 ]#
 
-proc memoryErr(m: string, a: ByteAddress) =
-  raise newException(
-    AccessViolationDefect,
-    fmt"{m} failed [Address: 0x{a.toHex()}] [Error: {GetLastError()}]"
-  )
-
 proc pidInfo(pid: DWORD): Process =
-  var snap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE or TH32CS_SNAPMODULE32, pid)
-  defer: CloseHandle(snap)
+  var 
+    snap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE or TH32CS_SNAPMODULE32, pid)
+    me = MODULEENTRY32(dwSize: sizeof(MODULEENTRY32).cint)
 
-  var me = MODULEENTRY32(dwSize: sizeof(MODULEENTRY32).cint)
+  defer: CloseHandle(snap)
 
   if Module32First(snap, me.addr) == 1:
     result = Process(
@@ -72,8 +67,9 @@ proc pidInfo(pid: DWORD): Process =
       result.modules[nullTerminated($$me.szModule)] = m
 
 proc process_by_name(name: string): Process {.exportpy.} =
-  var pidArray = newSeq[int32](1024)
-  var read: DWORD
+  var 
+    pidArray = newSeq[int32](1024)
+    read: DWORD
 
   assert EnumProcesses(pidArray[0].addr, 1024, read.addr) != FALSE
 
@@ -97,6 +93,12 @@ proc wait_for_process(name: string, interval: int = 1500): Process {.exportpy.} 
 
 proc close(self: Process): bool {.discardable, exportpy.} = 
   CloseHandle(self.handle) == 1
+
+proc memoryErr(m: string, a: ByteAddress) =
+  raise newException(
+    AccessViolationDefect,
+    fmt"{m} failed [Address: 0x{a.toHex()}] [Error: {GetLastError()}]"
+  )
 
 proc read(self: Process, address: ByteAddress, t: typedesc): t =
   if ReadProcessMemory(
@@ -130,11 +132,12 @@ proc readSeq(self: Process, address: ByteAddress, size: SIZE_T,  t: typedesc = b
     memoryErr("readSeq", address)
 
 proc aob_scan(self: Process, pattern: string, module: Mod = Mod()): ByteAddress {.exportpy.} =
-  var scanBegin, scanEnd: int
-  var rePattern = re(
-    pattern.toUpper().multiReplace((" ", ""), ("?", ".."), ("*", "..")),
-    {reIgnoreCase, reDotAll}
-  )
+  var 
+    scanBegin, scanEnd: int
+    rePattern = re(
+      pattern.toUpper().multiReplace((" ", ""), ("?", ".."), ("*", "..")),
+      {reIgnoreCase, reDotAll}
+    )
 
   if module.baseaddr != 0:
     scanBegin = module.baseaddr
