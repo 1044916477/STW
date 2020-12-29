@@ -399,7 +399,7 @@ proc triangle(x1, y1, x2, y2, x3, y3: float, color: array[0..2, float32], alpha:
   glDisable(GL_BLEND)
 
 #[
-  Vectors
+  vectors
 ]#
 
 proc vec2(x, y: float32 = 0): Vec2 {.exportpy.} =

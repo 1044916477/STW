@@ -5,7 +5,7 @@
 ![Alt text](https://i.ibb.co/WtcRsWv/csgo-py.png)
 
 ## [Assault Cube ESP](https://github.com/Sann0/PyMeow/blob/master/examples/ac_esp.py)
-![Alt text](https://i.ibb.co/gzQgQyQ/ac2-py.png)
+![Alt text](https://i.ibb.co/dcZ2htV/ac2-py.png)
 
 ## [Assault Cube Mem Hacks](https://github.com/Sann0/PyMeow/blob/master/examples/ac_hacks.py):
 ![Alt text](https://i.ibb.co/ZfdgcMS/ac-py.png)
