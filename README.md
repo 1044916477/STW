@@ -1,6 +1,6 @@
 # PyMeow
 ##### Python Game Hacking Library
-###### created with [nimpy](https://github.com/yglukhov/nimpy)
+###### credits to: [nimpy](https://github.com/yglukhov/nimpy), [winim](https://github.com/khchen/winim), [nimgl](https://github.com/nimgl/nimgl)
 
 
 ## [CSGo ESP](https://github.com/Sann0/PyMeow/blob/master/examples/csgo_esp.py):
