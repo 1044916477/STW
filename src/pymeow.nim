@@ -1,6 +1,6 @@
 #[
   PyMeow - Python Game Hacking Library
-  v1.4
+  v1.5
   Meow @ 2020
 ]#
 
@@ -19,21 +19,26 @@ type
     baseaddr: ByteAddress
     basesize*: DWORD
 
-  Process* = object
-    name*: string
-    handle*: HANDLE
-    pid*: DWORD
-    baseaddr*: ByteAddress
-    basesize*: DWORD
-    modules*: Table[string, Mod]
+  Process = object
+    name: string
+    handle: HANDLE
+    pid: DWORD
+    baseaddr: ByteAddress
+    basesize: DWORD
+    modules: Table[string, Mod]
 
-  Font* = object
-    font*: uint32
-    fontHDC*: HDC
+  Font = object
+    font: uint32
+    fontHDC: HDC
 
-  Overlay* = object
-    width*, height*, midX*, midY*: float
-    hwnd*: int
+  Overlay = object
+    width, height, midX, midY: float
+    hwnd: int
+
+  Vec2 = object
+    x, y: float32
+  Vec3 = object
+    x, y, z: float32
 
 #[
   Memory
@@ -94,7 +99,7 @@ proc wait_for_process(name: string, interval: int = 1500): Process {.exportpy.} 
 proc close(self: Process): bool {.discardable, exportpy.} = 
   CloseHandle(self.handle) == 1
 
-proc memoryErr(m: string, a: ByteAddress) =
+proc memoryErr(m: string, a: ByteAddress) {.inline.} =
   raise newException(
     AccessViolationDefect,
     fmt"{m} failed [Address: 0x{a.toHex()}] [Error: {GetLastError()}]"
@@ -205,6 +210,10 @@ proc read_byte(self: Process, address: ByteAddress): byte {.exportpy.} =
   result = self.read(address, byte)
 proc read_bytes(self: Process, address: ByteAddress, size: int32): seq[byte] {.exportpy.} =
   result = self.readSeq(address, size, byte)
+proc read_vec2(self: Process, address: ByteAddress): Vec2 {.exportpy.} =
+  result = self.read(address, Vec2)
+proc read_vec3(self: Process, address: ByteAddress): Vec3 {.exportpy.} =
+  result = self.read(address, Vec3)
 
 template write_data = self.write(address, data)
 template write_datas = self.writeArray(address, data)
@@ -388,6 +397,65 @@ proc triangle(x1, y1, x2, y2, x3, y3: float, color: array[0..2, float32], alpha:
   glVertex2f(x3, y3)
   glEnd()
   glDisable(GL_BLEND)
+
+#[
+  Vectors
+]#
+
+proc vec2(x, y: float32 = 0): Vec2 {.exportpy.} =
+  result.x = x
+  result.y = y
+proc vec3(x, y, z: float32 = 0): Vec3 {.exportpy.} =
+  result.x = x
+  result.y = y
+  result.z = z
+
+proc vec2_add(a, b: Vec2): Vec2 {.exportpy.} =
+  result.x = a.x + b.x
+  result.y = a.y + b.y
+proc vec3_add(a, b: Vec3): Vec3 {.exportpy.} =
+  result.x = a.x + b.x
+  result.y = a.y + b.y
+  result.z = a.z + b.z
+
+proc vec2_sub(a, b: Vec2): Vec2 {.exportpy.} =
+  result.x = a.x - b.x
+  result.y = a.y - b.y
+proc vec3_sub(a, b: Vec3): Vec3 {.exportpy.} =
+  result.x = a.x - b.x
+  result.y = a.y - b.y
+  result.z = a.z - b.z
+
+proc vec2_mult(a, b: Vec2): Vec2 {.exportpy.} =
+  result.x = a.x * b.x
+  result.y = a.y * b.y
+proc vec3_mult(a, b: Vec3): Vec3 {.exportpy.} =
+  result.x = a.x * b.x
+  result.y = a.y * b.y
+  result.z = a.z * b.z
+
+proc vec2_div(a, b: Vec2): Vec2 {.exportpy.} =
+  result.x = a.x / b.x
+  result.y = a.y / b.y
+proc vec3_div(a, b: Vec3): Vec3 {.exportpy.} =
+  result.x = a.x / b.x
+  result.y = a.y / b.y
+  result.z = a.z / b.z
+
+proc vec2_magSq(self: Vec2): float32 {.exportpy.} =
+  (self.x * self.x) + (self.y * self.y)
+proc vec3_magSq(self: Vec3): float32 {.exportpy.} =
+  (self.x * self.x) + (self.y * self.y) + (self.z * self.z)
+
+proc vec2_mag(self: Vec2): float32 {.exportpy.} =
+  sqrt(self.vec2_magSq())
+proc vec3_mag(self: Vec3): float32 {.exportpy.} =
+  sqrt(self.vec3_magSq())
+
+proc vec2_distance(a, b: Vec2): float32 {.exportpy.} =
+  vec2_mag(vec2_sub(a, b))
+proc vec3_distance(a, b: Vec3): float32 {.exportpy.} =
+  vec3_mag(vec3_sub(a, b))
 
 #[
   misc

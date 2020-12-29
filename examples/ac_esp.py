@@ -50,17 +50,17 @@ class Entity:
             "hp": read_int(self.mem, self.addr + Offsets.health),
             "team": read_int(self.mem, self.addr + Offsets.team),
             "armor": read_int(self.mem, self.addr + Offsets.armor),
-            "pos3d": read_floats(self.mem, self.addr + Offsets.pos, 3),
-            "pos2d": list(),
+            "pos3d": read_vec3(self.mem, self.addr + Offsets.pos),
+            "pos2d": vec2(),
         }
 
     def calc_wts(self, overlay, v_matrix):
-        clip_x = self.info["pos3d"][0] * v_matrix[0] + self.info["pos3d"][1] * v_matrix[4] + \
-                 self.info["pos3d"][2] * v_matrix[8] + v_matrix[12]
-        clip_y = self.info["pos3d"][0] * v_matrix[1] + self.info["pos3d"][1] * v_matrix[5] + \
-                 self.info["pos3d"][2] * v_matrix[9] + v_matrix[13]
-        clip_w = self.info["pos3d"][0] * v_matrix[3] + self.info["pos3d"][1] * v_matrix[7] + \
-                 self.info["pos3d"][2] * v_matrix[11] + v_matrix[15]
+        clip_x = self.info["pos3d"]["x"] * v_matrix[0] + self.info["pos3d"]["y"] * v_matrix[4] + \
+                 self.info["pos3d"]["z"] * v_matrix[8] + v_matrix[12]
+        clip_y = self.info["pos3d"]["x"] * v_matrix[1] + self.info["pos3d"]["y"] * v_matrix[5] + \
+                 self.info["pos3d"]["z"] * v_matrix[9] + v_matrix[13]
+        clip_w = self.info["pos3d"]["x"] * v_matrix[3] + self.info["pos3d"]["y"] * v_matrix[7] + \
+                 self.info["pos3d"]["z"] * v_matrix[11] + v_matrix[15]
 
         if clip_w < 0.1:
             raise Exception("WTS")
@@ -68,8 +68,8 @@ class Entity:
         nds_x = clip_x / clip_w
         nds_y = clip_y / clip_w
 
-        self.info["pos2d"].append(((nds_x / 2) + 0.5) * overlay["width"])
-        self.info["pos2d"].append(((nds_y / 2) + 0.5) * overlay["height"])
+        self.info["pos2d"]["x"] = (nds_x / 2 + 0.5) * overlay["width"]
+        self.info["pos2d"]["y"] = (nds_y / 2 + 0.5) * overlay["height"]
 
 
 def main():
@@ -82,8 +82,13 @@ def main():
         player_count = read_int(mem, Pointer.player_count)
 
         if player_count > 1:
+            try:
+                local_ent = Entity(read_int(mem, Pointer.local_player), mem)
+                v_matrix = read_floats(mem, Pointer.view_matrix, 16)
+            except:
+                continue
+
             ent_buffer = read_ints(mem, read_int(mem, Pointer.entity_list), player_count)[1:]
-            v_matrix = read_floats(mem, Pointer.view_matrix, 16)
             for addr in ent_buffer:
                 try:
                     ent_obj = Entity(addr, mem)
@@ -94,25 +99,30 @@ def main():
                 if ent_obj.info["pos2d"] and ent_obj.info["hp"] > 0:
                     ent_color = Colors.blue if ent_obj.info['team'] == 1 else Colors.red
 
-                    circle(ent_obj.info["pos2d"][0] - 10, ent_obj.info["pos2d"][1], 3, ent_color)
+                    circle(ent_obj.info["pos2d"]["x"] - 10, ent_obj.info["pos2d"]["y"], 3, ent_color)
                     font_print(
-                        font, ent_obj.info["pos2d"][0], ent_obj.info["pos2d"][1],
+                        font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"],
                         ent_obj.info["name"],
                         Colors.white
                     )
                     font_print(
-                        font, ent_obj.info["pos2d"][0], ent_obj.info["pos2d"][1] - 13,
+                        font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 13,
                         f"Team: {ent_obj.info['team']}",
                         ent_color
                     )
                     font_print(
-                        font, ent_obj.info["pos2d"][0], ent_obj.info["pos2d"][1] - 26,
+                        font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 26,
                         f"Health: {ent_obj.info['hp']}",
                         Colors.white
                     )
                     font_print(
-                        font, ent_obj.info["pos2d"][0], ent_obj.info["pos2d"][1] - 39,
+                        font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 39,
                         f"Armor:  {ent_obj.info['armor']}",
+                        Colors.white
+                    )
+                    font_print(
+                        font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 52,
+                        f"Distance:  {int(vec3_distance(ent_obj.info['pos3d'], local_ent.info['pos3d']))}",
                         Colors.white
                     )
 
