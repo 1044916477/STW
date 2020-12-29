@@ -79,7 +79,7 @@ class Entity:
         write_bytes(self.mem, glow_addr + 0x24, [1, 0])
 
 
-def main():
+def main(): 
     csgo_proc = wait_for_process("csgo.exe")
     game_module = csgo_proc["modules"]["client.dll"]["baseaddr"]
     overlay = overlay_init()
