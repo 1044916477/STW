@@ -76,7 +76,7 @@ def main():
     mem = process_by_name("ac_client.exe")
     overlay = overlay_init("AssaultCube")
     font = font_init(10, "Tahoma")
-    set_foreground("AssaultCube") 
+    set_foreground("AssaultCube")
 
     while overlay_loop(overlay):
         player_count = read_int(mem, Pointer.player_count)
