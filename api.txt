@@ -42,8 +42,8 @@
   box(x, y, width, height, lineWidth: float, color: rgb array)
   alpha_box(x, y, width, height: float, color, outlineColor: rgb array, alpha: float)
   line(x1, y1, x2, y2, lineWidth: float, color: rgb array)
-  dashed_line(x1, y1, x2, y2, lineWidth: float, color: rgb array, factor = 2: int, pattern = "11111110000": string, alpha = 0.5: float)
-  circle(x, y, radius: float, color: rgb array, filled = true: bool)
+  dashed_line(x1, y1, x2, y2, lineWidth: float, color: rgb array, factor: int = 2, pattern: string = "11111110000", alpha: float = 0.5)
+  circle(x, y, radius: float, color: rgb array, filled: bool = true)
   rad_circle(x, y, radius: float, value: int, color: rgb array)
   triangle(x1, y1, x2, y2, x3, y3: float, color: rgb array, alpha: float)
 
