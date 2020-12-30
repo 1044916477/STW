@@ -6,7 +6,6 @@
 
 import tables, re, os, strutils
 from strformat import fmt
-from strutils import fromBin
 from math import degToRad, cos, sin, sqrt
 
 import nimpy, winim
