@@ -66,7 +66,6 @@ def main():
                 try:
                     ent_obj = Entity(addr, mem)
                     ent_obj.info["pos2d"] = wts_ogl(overlay, v_matrix, ent_obj.info["pos3d"])
-                    #ent_obj.calc_wts(overlay, v_matrix)
                 except:
                     continue
 
