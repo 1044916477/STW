@@ -56,6 +56,7 @@
   vec2_mag(a, b: Vec2) -> float
   vec2_magSq(a, b: Vec2) -> float
   vec2_distance(a, b: Vec2) -> float
+  vec2_closest(a: Vec2, b: Vec2 array) -> Vec2
 
   vec3(x, y, z: float = 0) -> Vec3
   vec3_add(a, b: Vec3) -> Vec3
@@ -65,8 +66,10 @@
   vec3_mag(a, b: Vec3) -> float
   vec3_magSq(a, b: Vec3) -> float
   vec3_distance(a, b: Vec3) -> float
+  vec3_closest(a: Vec2, b: Vec3 array) -> Vec3
 
 -- Misc
+  key_pressed(vKey: int) -> bool
   rgb(color: string) -> float array
   wts_ogl(Overlay, matrix: float array (16), pos: Vec3) -> Vec2
   wts_dx(Overlay, matrix: float array (16), pos: Vec3) -> Vec2

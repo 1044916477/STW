@@ -1,6 +1,6 @@
 #[
   PyMeow - Python Game Hacking Library
-  v1.7
+  v1.9
   Meow @ 2020
 ]#
 
@@ -90,8 +90,7 @@ proc process_by_name(name: string): Process {.exportpy.} =
 proc wait_for_process(name: string, interval: int = 1500): Process {.exportpy.} =
   while true:
     try:
-      result = processByName(name)
-      break
+      return processByName(name)
     except:
       sleep(interval)
 
@@ -196,23 +195,15 @@ proc page_protection(self: Process, address: ByteAddress, newProtection: int32 =
 
 proc read_string(self: Process, address: ByteAddress): string {.exportpy.} =
   let r = self.read(address, array[0..100, char])
-  result = $cast[cstring](r[0].unsafeAddr)
-proc read_int(self: Process, address: ByteAddress): int32 {.exportpy.} = 
-  result = self.read(address, int32)
-proc read_ints(self: Process, address: ByteAddress, size: int32): seq[int32] {.exportpy.} =
-  result = self.readSeq(address, size, int32)
-proc read_float(self: Process, address: ByteAddress): float32 {.exportpy.} = 
-  result = self.read(address, float32)
-proc read_floats(self: Process, address: ByteAddress, size: int32): seq[float32] {.exportpy.} = 
-  result = self.readSeq(address, size, float32)
-proc read_byte(self: Process, address: ByteAddress): byte {.exportpy.} = 
-  result = self.read(address, byte)
-proc read_bytes(self: Process, address: ByteAddress, size: int32): seq[byte] {.exportpy.} =
-  result = self.readSeq(address, size, byte)
-proc read_vec2(self: Process, address: ByteAddress): Vec2 {.exportpy.} =
-  result = self.read(address, Vec2)
-proc read_vec3(self: Process, address: ByteAddress): Vec3 {.exportpy.} =
-  result = self.read(address, Vec3)
+  $cast[cstring](r[0].unsafeAddr)
+proc read_int(self: Process, address: ByteAddress): int32 {.exportpy.} = self.read(address, int32)
+proc read_ints(self: Process, address: ByteAddress, size: int32): seq[int32] {.exportpy.} = self.readSeq(address, size, int32)
+proc read_float(self: Process, address: ByteAddress): float32 {.exportpy.} = self.read(address, float32)
+proc read_floats(self: Process, address: ByteAddress, size: int32): seq[float32] {.exportpy.} = self.readSeq(address, size, float32)
+proc read_byte(self: Process, address: ByteAddress): byte {.exportpy.} = self.read(address, byte)
+proc read_bytes(self: Process, address: ByteAddress, size: int32): seq[byte] {.exportpy.} = self.readSeq(address, size, byte)
+proc read_vec2(self: Process, address: ByteAddress): Vec2 {.exportpy.} = self.read(address, Vec2)
+proc read_vec3(self: Process, address: ByteAddress): Vec3 {.exportpy.} = self.read(address, Vec3)
 
 template write_data = self.write(address, data)
 template write_datas = self.writeArray(address, data)
@@ -458,9 +449,22 @@ proc vec2_distance(a, b: Vec2): float32 {.exportpy.} =
 proc vec3_distance(a, b: Vec3): float32 {.exportpy.} =
   vec3_mag(vec3_sub(a, b))
 
+proc vec2_closest(a: Vec2, b: varargs[Vec2]): Vec2 {.exportpy.} =
+  var closest_value = float32.high
+  for v in b:
+    if a.vec2_distance(v) < closest_value:
+      result = v
+proc vec3_closest(a: Vec3, b: varargs[Vec3]): Vec3 {.exportpy.} =
+  var closest_value = float32.high
+  for v in b:
+    if a.vec3_distance(v) < closest_value:
+      result = v
 #[
   misc
 ]#
+
+proc key_pressed(vKey: int32): bool {.exportpy.} =
+  GetAsyncKeyState(vKey).bool
 
 proc set_foreground(winTitle: string): bool {.discardable, exportpy.} = 
   SetForeGroundWindow(FindWindowA(nil, winTitle))

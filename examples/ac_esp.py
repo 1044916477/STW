@@ -101,6 +101,10 @@ def main():
 
         overlay_update(overlay)
 
+        # 35: END
+        if key_pressed(35): 
+            overlay_close(overlay)
+
 
 if __name__ == "__main__":
     main()
