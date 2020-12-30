@@ -24,9 +24,9 @@ class Colors:
 
 
 def wts(matrix, overlay, pos):
-    clip_x = pos[0] * matrix[0] + pos[1] * matrix[1] + pos[2] * matrix[2] + matrix[3]
-    clip_y = pos[0] * matrix[4] + pos[1] * matrix[5] + pos[2] * matrix[6] + matrix[7]
-    clip_w = pos[0] * matrix[12] + pos[1] * matrix[13] + pos[2] * matrix[14] + matrix[15]
+    clip_x = pos["x"] * matrix[0] + pos["y"] * matrix[1] + pos["z"] * matrix[2] + matrix[3]
+    clip_y = pos["x"] * matrix[4] + pos["y"] * matrix[5] + pos["z"] * matrix[6] + matrix[7]
+    clip_w = pos["x"] * matrix[12] + pos["y"] * matrix[13] + pos["z"] * matrix[14] + matrix[15]
 
     if clip_w < 0.1:
         return False
@@ -34,10 +34,10 @@ def wts(matrix, overlay, pos):
     ndc_x = clip_x / clip_w
     ndc_y = clip_y / clip_w
 
-    x = (overlay["width"] / 2 * ndc_x) + (ndc_x + overlay["width"] / 2)
-    y = (overlay["height"] / 2 * ndc_y) + (ndc_y + overlay["height"] / 2)
-
-    return x, y
+    return vec2(
+        (overlay["width"] / 2 * ndc_x) + (ndc_x + overlay["width"] / 2),
+        (overlay["height"] / 2 * ndc_y) + (ndc_y + overlay["height"] / 2)
+    )
 
 
 class Entity:
@@ -55,7 +55,7 @@ class Entity:
 
     @property
     def pos(self):
-        return read_floats(self.mem, self.addr + Offsets.m_vecOrigin, 3)
+        return read_vec3(self.mem, self.addr + Offsets.m_vecOrigin)
 
     @property
     def name(self):
@@ -64,11 +64,11 @@ class Entity:
         return read_string(self.mem, hud_radar + 0x300 + (0x174 * (self.id - 1)))
 
     def bone_pos(self, bone_id):
-        return [
+        return vec3(
             read_float(self.mem, self.bone_base + 0x30 * bone_id + 0x0C),
             read_float(self.mem, self.bone_base + 0x30 * bone_id + 0x1C),
             read_float(self.mem, self.bone_base + 0x30 * bone_id + 0x2C)
-        ]
+        )
 
     def glow(self):
         glow_addr = read_int(self.mem, self.gmod + Offsets.dwGlowObjectManager) \
@@ -102,36 +102,42 @@ def main():
                             ent.glow()
                             font_print(
                                 font,
-                                ent.wts[0] + 20, ent.wts[1] + 20,
+                                ent.wts["x"] + 20, ent.wts["y"] + 30,
                                 ent.name,
                                 Colors.white
                             )
                             font_print(
                                 font,
-                                ent.wts[0] + 20, ent.wts[1] + 10,
+                                ent.wts["x"] + 20, ent.wts["y"] + 20,
                                 str(ent.health),
+                                Colors.white
+                            )
+                            font_print(
+                                font,
+                                ent.wts["x"] + 20, ent.wts["y"] + 10,
+                                str(int(vec3_distance(ent.pos, local_ent.pos) / 20)),
                                 Colors.white
                             )
                             dashed_line(
                                 overlay["midX"], 0,
-                                ent.wts[0], ent.wts[1], 1,
+                                ent.wts["x"], ent.wts["y"], 1,
                                 Colors.white
                             )
 
                             head_pos = wts(view_matrix, overlay, ent.bone_pos(8))
-                            head = head_pos[1] - ent.wts[1]
+                            head = head_pos["y"] - ent.wts["y"]
                             width = head / 2
                             center = width / -2
                             alpha_box(
-                                ent.wts[0] + center, 
-                                ent.wts[1], 
+                                ent.wts["x"] + center, 
+                                ent.wts["y"], 
                                 width, 
                                 head + 5, 
                                 Colors.blue if ent.team != 2 else Colors.red, 
                                 Colors.black, 
                                 0.15
                             )
-                        except:
+                        except Exception as e:
                             # WTS failed.
                             pass
 

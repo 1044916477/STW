@@ -2,7 +2,7 @@
 ##### Python Library for external Game Hacking created with [Nim](https://nim-lang.org)
 
 ## [CSGo ESP](https://github.com/Sann0/PyMeow/blob/master/examples/csgo_esp.py):
-![Alt text](https://i.ibb.co/WtcRsWv/csgo-py.png)
+![Alt text](https://i.ibb.co/jr5BNYx/csgo-py.png)
 
 ## [Assault Cube ESP](https://github.com/Sann0/PyMeow/blob/master/examples/ac_esp.py)
 ![Alt text](https://i.ibb.co/dcZ2htV/ac2-py.png)
