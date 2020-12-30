@@ -1,10 +1,10 @@
 #[
   PyMeow - Python Game Hacking Library
-  v1.5
+  v1.7
   Meow @ 2020
 ]#
 
-import tables, re, os, strutils
+import tables, re, os, strutils, colors
 from strformat import fmt
 from math import degToRad, cos, sin, sqrt
 
@@ -485,3 +485,48 @@ proc mouse_click {.exportpy.} =
   SendInput(1, down.addr, cast[int32](sizeof(down)))
   sleep(3)
   SendInput(1, release.addr, cast[int32](sizeof(release)))
+
+proc rgb(color: string): array[0..2, float32] {.exportpy.} =
+  try:
+    let c = parseColor(color).extractRGB()
+    [c.r.float32, c.g.float32, c.b.float32]
+  except:
+    [0.float32, 0, 0]
+
+proc wts_ogl(self: Overlay, matrix: array[0..15, float32], pos: Vec3): Vec2 {.exportpy.} =
+  var 
+    clip: Vec3
+    ndc: Vec2
+
+  clip.x = pos.x * matrix[0] + pos.y * matrix[4] + pos.z * matrix[8] + matrix[12]
+  clip.y = pos.x * matrix[1] + pos.y * matrix[5] + pos.z * matrix[9] + matrix[13]
+  # z = w
+  clip.z = pos.x * matrix[3] + pos.y * matrix[7] + pos.z * matrix[11] + matrix[15]
+
+  if clip.z < 0.1:
+    raise newException(Exception, "WTS Error")
+
+  ndc.x = clip.x / clip.z
+  ndc.y = clip.y / clip.z
+
+  result.x = (self.width / 2 * ndc.x) + (ndc.x + self.width / 2)
+  result.y = (self.height / 2 * ndc.y) + (ndc.y + self.height / 2)
+
+proc wts_dx(self: Overlay, matrix: array[0..15, float32], pos: Vec3): Vec2 {.exportpy.} =
+  var 
+    clip: Vec3
+    ndc: Vec2
+
+  clip.x = pos.x * matrix[0] + pos.y * matrix[1] + pos.z * matrix[2] + matrix[3]
+  clip.y = pos.x * matrix[4] + pos.y * matrix[5] + pos.z * matrix[6] + matrix[7]
+  # z = w
+  clip.z = pos.x * matrix[12] + pos.y * matrix[13] + pos.z * matrix[14] + matrix[15]
+
+  if clip.z < 0.1:
+    raise newException(Exception, "WTS Error")
+
+  ndc.x = clip.x / clip.z
+  ndc.y = clip.y / clip.z
+
+  result.x = (self.width / 2 * ndc.x) + (ndc.x + self.width / 2)
+  result.y = (self.height / 2 * ndc.y) + (ndc.y + self.height / 2)

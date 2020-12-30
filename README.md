@@ -33,6 +33,8 @@
   write_floats(Process, address: int, data: float array)
   write_byte(Process, address: int, data: byte)
   write_bytes(Process, address: int, data: byte array)
+  write_vec2(Process, address: int, data: Vec2)
+  write_vec3(Process, address: int, data: Vec3)
 
   dma_addr(Process, baseAddr: int, offsets: array) -> int
   aob_scan(Process, pattern: string, module: Process["modules"]["moduleName"]) -> int
@@ -59,7 +61,7 @@
   rad_circle(x, y, radius: float, value: int, color: rgb array)
   triangle(x1, y1, x2, y2, x3, y3: float, color: rgb array, alpha: float)
 
--- Vectors
+-- Vectors:
   vec2(x, y: float = 0) -> Vec2
   vec2_add(a, b: Vec2) -> Vec2
   vec2_del(a, b: Vec2) -> Vec2
@@ -79,6 +81,9 @@
   vec3_distance(a, b: Vec3) -> float
 
 -- Misc
+  rgb(color: string) -> float array
+  wts_ogl(Overlay, matrix: float array (16), pos: Vec3) -> Vec2
+  wts_dx(Overlay, matrix: float array (16), pos: Vec3) -> Vec2
   set_foreground(title: string)
   mouse_click()
   mouse_move(overlay: Overlay, x, y: float)

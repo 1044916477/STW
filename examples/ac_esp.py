@@ -1,16 +1,6 @@
 from pymeow import *
 
 
-class Colors:
-    red = (255, 0, 0)
-    yellow = (255, 255, 100)
-    blue = (0, 0, 255)
-    green = (0, 255, 0)
-    white = (255, 255, 255)
-    black = (0, 0, 0)
-    silver = (192, 192, 192)
-
-
 class Pointer:
     player_count = 0x0050F500
     entity_list = 0x0050F4F8
@@ -54,23 +44,6 @@ class Entity:
             "pos2d": vec2(),
         }
 
-    def calc_wts(self, overlay, v_matrix):
-        clip_x = self.info["pos3d"]["x"] * v_matrix[0] + self.info["pos3d"]["y"] * v_matrix[4] + \
-                 self.info["pos3d"]["z"] * v_matrix[8] + v_matrix[12]
-        clip_y = self.info["pos3d"]["x"] * v_matrix[1] + self.info["pos3d"]["y"] * v_matrix[5] + \
-                 self.info["pos3d"]["z"] * v_matrix[9] + v_matrix[13]
-        clip_w = self.info["pos3d"]["x"] * v_matrix[3] + self.info["pos3d"]["y"] * v_matrix[7] + \
-                 self.info["pos3d"]["z"] * v_matrix[11] + v_matrix[15]
-
-        if clip_w < 0.1:
-            raise Exception("WTS")
-
-        nds_x = clip_x / clip_w
-        nds_y = clip_y / clip_w
-
-        self.info["pos2d"]["x"] = (nds_x / 2 + 0.5) * overlay["width"]
-        self.info["pos2d"]["y"] = (nds_y / 2 + 0.5) * overlay["height"]
-
 
 def main():
     mem = process_by_name("ac_client.exe")
@@ -92,18 +65,19 @@ def main():
             for addr in ent_buffer:
                 try:
                     ent_obj = Entity(addr, mem)
-                    ent_obj.calc_wts(overlay, v_matrix)
+                    ent_obj.info["pos2d"] = wts_ogl(overlay, v_matrix, ent_obj.info["pos3d"])
+                    #ent_obj.calc_wts(overlay, v_matrix)
                 except:
                     continue
 
                 if ent_obj.info["pos2d"] and ent_obj.info["hp"] > 0:
-                    ent_color = Colors.blue if ent_obj.info['team'] == 1 else Colors.red
+                    ent_color = rgb("blue") if ent_obj.info['team'] == 1 else rgb("red")
 
                     circle(ent_obj.info["pos2d"]["x"] - 10, ent_obj.info["pos2d"]["y"], 3, ent_color)
                     font_print(
                         font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"],
                         ent_obj.info["name"],
-                        Colors.white
+                        rgb("white")
                     )
                     font_print(
                         font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 13,
@@ -113,17 +87,17 @@ def main():
                     font_print(
                         font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 26,
                         f"Health: {ent_obj.info['hp']}",
-                        Colors.white
+                        rgb("white")
                     )
                     font_print(
                         font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 39,
                         f"Armor:  {ent_obj.info['armor']}",
-                        Colors.white
+                        rgb("white")
                     )
                     font_print(
                         font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 52,
                         f"Distance:  {int(vec3_distance(ent_obj.info['pos3d'], local_ent.info['pos3d']))}",
-                        Colors.white
+                        rgb("white")
                     )
 
         overlay_update(overlay)

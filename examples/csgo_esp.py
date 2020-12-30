@@ -16,30 +16,6 @@ class Offsets:
     m_dwBoneMatrix      = 0x26A8
 
 
-class Colors:
-    blue  = [0.0, 0.0, 255.0]
-    red   = [255.0, 0.0, 0.0]
-    white = [255.0, 255.0, 255.0]
-    black = [0.0, 0.0, 0.0]
-
-
-def wts(matrix, overlay, pos):
-    clip_x = pos["x"] * matrix[0] + pos["y"] * matrix[1] + pos["z"] * matrix[2] + matrix[3]
-    clip_y = pos["x"] * matrix[4] + pos["y"] * matrix[5] + pos["z"] * matrix[6] + matrix[7]
-    clip_w = pos["x"] * matrix[12] + pos["y"] * matrix[13] + pos["z"] * matrix[14] + matrix[15]
-
-    if clip_w < 0.1:
-        return False
-
-    ndc_x = clip_x / clip_w
-    ndc_y = clip_y / clip_w
-
-    return vec2(
-        (overlay["width"] / 2 * ndc_x) + (ndc_x + overlay["width"] / 2),
-        (overlay["height"] / 2 * ndc_y) + (ndc_y + overlay["height"] / 2)
-    )
-
-
 class Entity:
     def __init__(self, addr, mem, gmod):
         self.wts = None
@@ -74,7 +50,7 @@ class Entity:
         glow_addr = read_int(self.mem, self.gmod + Offsets.dwGlowObjectManager) \
                 + read_int(self.mem, self.addr + Offsets.m_iGlowIndex) * 0x38
         
-        color = Colors.blue if self.team != 2 else Colors.red
+        color = rgb("cyan") if self.team != 2 else rgb("orange")
         write_floats(self.mem, glow_addr + 4, color + [1.3])
         write_bytes(self.mem, glow_addr + 0x24, [1, 0])
 
@@ -98,33 +74,33 @@ def main():
                     ent = Entity(ent_addr, csgo_proc, game_module)
                     if not ent.dormant and ent.health > 0:
                         try:
-                            ent.wts = wts(view_matrix, overlay, ent.pos)
+                            ent.wts = wts_dx(overlay, view_matrix, ent.pos)
                             ent.glow()
                             font_print(
                                 font,
                                 ent.wts["x"] + 20, ent.wts["y"] + 30,
                                 ent.name,
-                                Colors.white
+                                rgb("white")
                             )
                             font_print(
                                 font,
                                 ent.wts["x"] + 20, ent.wts["y"] + 20,
                                 str(ent.health),
-                                Colors.white
+                                rgb("white")
                             )
                             font_print(
                                 font,
                                 ent.wts["x"] + 20, ent.wts["y"] + 10,
                                 str(int(vec3_distance(ent.pos, local_ent.pos) / 20)),
-                                Colors.white
+                                rgb("white")
                             )
                             dashed_line(
                                 overlay["midX"], 0,
                                 ent.wts["x"], ent.wts["y"], 1,
-                                Colors.white
+                                rgb("white")
                             )
 
-                            head_pos = wts(view_matrix, overlay, ent.bone_pos(8))
+                            head_pos = wts_dx(overlay, view_matrix, ent.bone_pos(8))
                             head = head_pos["y"] - ent.wts["y"]
                             width = head / 2
                             center = width / -2
@@ -133,8 +109,8 @@ def main():
                                 ent.wts["y"], 
                                 width, 
                                 head + 5, 
-                                Colors.blue if ent.team != 2 else Colors.red, 
-                                Colors.black, 
+                                rgb("blue") if ent.team != 2 else rgb("red"), 
+                                rgb("black"), 
                                 0.15
                             )
                         except Exception as e:

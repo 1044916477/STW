@@ -67,6 +67,9 @@
   vec3_distance(a, b: Vec3) -> float
 
 -- Misc
+  rgb(color: string) -> float array
+  wts_ogl(Overlay, matrix: float array (16), pos: Vec3) -> Vec2
+  wts_dx(Overlay, matrix: float array (16), pos: Vec3) -> Vec2
   set_foreground(title: string)
   mouse_click()
   mouse_move(overlay: Overlay, x, y: float)
