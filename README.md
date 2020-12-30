@@ -13,7 +13,6 @@
 ## API:
 ```
 -- Memory:
--- Memory:
   process_by_name(name: string) -> Process
   wait_for_process(name: string) -> Process
   close(Process) -> bool
