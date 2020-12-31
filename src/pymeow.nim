@@ -1,6 +1,6 @@
 #[
   PyMeow - Python Game Hacking Library
-  v1.9
+  v1.10
   Meow @ 2020
 ]#
 
@@ -197,7 +197,9 @@ proc read_string(self: Process, address: ByteAddress): string {.exportpy.} =
   let r = self.read(address, array[0..100, char])
   $cast[cstring](r[0].unsafeAddr)
 proc read_int(self: Process, address: ByteAddress): int32 {.exportpy.} = self.read(address, int32)
+proc read_uint(self: Process, address: ByteAddress): uint32 {.exportpy.} = self.read(address, uint32)
 proc read_ints(self: Process, address: ByteAddress, size: int32): seq[int32] {.exportpy.} = self.readSeq(address, size, int32)
+proc read_uints(self: Process, address: ByteAddress, size: int32): seq[uint32] {.exportpy.} = self.readSeq(address, size, uint32)
 proc read_float(self: Process, address: ByteAddress): float32 {.exportpy.} = self.read(address, float32)
 proc read_floats(self: Process, address: ByteAddress, size: int32): seq[float32] {.exportpy.} = self.readSeq(address, size, float32)
 proc read_byte(self: Process, address: ByteAddress): byte {.exportpy.} = self.read(address, byte)

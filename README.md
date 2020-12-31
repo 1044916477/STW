@@ -10,6 +10,9 @@
 ## [Assault Cube Mem Hacks](https://github.com/Sann0/PyMeow/blob/master/examples/ac_hacks.py):
 ![Alt text](https://i.ibb.co/ZfdgcMS/ac-py.png)
 
+## [SWBF2 ESP](https://github.com/Sann0/PyMeow/blob/master/examples/swbf2_esp.py)
+![Alt text](https://i.ibb.co/tq49DD1/swbf-py.png)
+
 ## API:
 ```
 -- Memory:
@@ -20,6 +23,8 @@
   read_string(Process, address: int) -> string
   read_int(Process, address: int) -> int
   read_ints(Process, address: int, size: int) -> int array
+  read_uint(Process, address: int) -> int
+  read_uints(Process, address: int, size: int) -> int array
   read_float(Process, address: int) -> float
   read_floats(Process, address: int, size: int) -> float array
   read_byte(Process, address: int) -> byte

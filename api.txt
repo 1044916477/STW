@@ -6,6 +6,8 @@
   read_string(Process, address: int) -> string
   read_int(Process, address: int) -> int
   read_ints(Process, address: int, size: int) -> int array
+  read_uint(Process, address: int) -> int
+  read_uints(Process, address: int, size: int) -> int array
   read_float(Process, address: int) -> float
   read_floats(Process, address: int, size: int) -> float array
   read_byte(Process, address: int) -> byte
