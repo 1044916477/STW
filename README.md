@@ -31,6 +31,7 @@
   read_bytes(Process, address: int, size: int) -> byte array
   read_vec2(Process, address: int) -> vec2
   read_vec3(Process, address: int) -> vec3
+  read_bool(Process, address: int) -> bool
 
   write_int(Process, address: int, data: int)
   write_ints(Process, address: int, data: int array)
@@ -40,6 +41,7 @@
   write_bytes(Process, address: int, data: byte array)
   write_vec2(Process, address: int, data: Vec2)
   write_vec3(Process, address: int, data: Vec3)
+  write_bool(Process, address: int, data: bool)
 
   dma_addr(Process, baseAddr: int, offsets: array) -> int
   aob_scan(Process, pattern: string, module: Process["modules"]["moduleName"]) -> int

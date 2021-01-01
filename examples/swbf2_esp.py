@@ -1,3 +1,4 @@
+import sys
 from pymeow import *
 
 
@@ -28,7 +29,7 @@ try:
     player_manager = read_int(mem, game_context + Offsets.PlayerManager)
     overlay = overlay_init()
 except Exception as e:
-    exit(e)
+    sys.exit(e)
 
 
 def wts(pos, vm):
@@ -116,7 +117,7 @@ def main():
                 try:
                     ent.pos2d = wts(ent.pos3d, vm)
                     ent.headpos2d = wts(ent.headpos3d, vm)
-                except:
+                except Exception:
                     continue
 
                 head = ent.headpos2d["y"] - ent.pos2d["y"]

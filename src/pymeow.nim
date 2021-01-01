@@ -1,6 +1,6 @@
 #[
   PyMeow - Python Game Hacking Library
-  v1.11
+  v1.12
   Meow @ 2020
 ]#
 
@@ -207,6 +207,7 @@ proc read_byte(self: Process, address: ByteAddress): byte {.exportpy.} = self.re
 proc read_bytes(self: Process, address: ByteAddress, size: int32): seq[byte] {.exportpy.} = self.readSeq(address, size, byte)
 proc read_vec2(self: Process, address: ByteAddress): Vec2 {.exportpy.} = self.read(address, Vec2)
 proc read_vec3(self: Process, address: ByteAddress): Vec3 {.exportpy.} = self.read(address, Vec3)
+proc read_bool(self: Process, address: ByteAddress): bool {.exportpy.} = self.read(address, byte).bool
 
 template write_data = self.write(address, data)
 template write_datas = self.writeArray(address, data)
@@ -218,6 +219,7 @@ proc write_byte(self: Process, address: ByteAddress, data: byte) {.exportpy.} = 
 proc write_bytes(self: Process, address: ByteAddress, data: openArray[byte]) {.exportpy.} = write_datas
 proc write_vec2(self: Process, address: ByteAddress, data: Vec2) {.exportpy.} = write_data
 proc write_vec3(self: Process, address: ByteAddress, data: Vec3) {.exportpy.} = write_data
+proc write_bool(self: Process, address: ByteAddress, data: bool) {.exportpy.} = self.write(address, data.byte)
 
 #[
   overlay
