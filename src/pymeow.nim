@@ -1,12 +1,13 @@
 #[
   PyMeow - Python Game Hacking Library
-  v1.10
+  v1.11
   Meow @ 2020
 ]#
 
-import tables, re, os, strutils, colors
+import 
+  tables, re, os, math,
+  strutils, colors
 from strformat import fmt
-from math import degToRad, cos, sin, sqrt
 
 import nimpy, winim
 import nimgl/[glfw, opengl, glfw/native]
@@ -260,8 +261,9 @@ proc overlay_init(target: string = "Fullscreen", borderOffset: int32 = 25): Over
   glLoadIdentity()
   glOrtho(0, result.width.float64, 0, result.height.float64, -1, 1)
   glDisable(GL_DEPTH_TEST)
-  glDisable(GL_BLEND)
   glDisable(GL_TEXTURE_2D)
+  glEnable(GL_BLEND)
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
   result.hwnd = cast[int](getWin32Window(OverlayWindow))
   # Note: GLFW_MOUSE_PASSTHROUGH window hint will be supported in GLFW 3.4
@@ -271,15 +273,21 @@ proc overlay_init(target: string = "Fullscreen", borderOffset: int32 = 25): Over
 
 proc overlay_update(self: Overlay) {.exportpy.} =
   OverlayWindow.swapBuffers()
-  glfwPollEvents()
   glClear(GL_COLOR_BUFFER_BIT)
+  glfwPollEvents()
 
 proc overlay_deinit(self: Overlay) {.exportpy.} =
   OverlayWindow.destroyWindow()
   glfwTerminate()
 
-proc overlay_close(self: Overlay) {.exportpy.} = OverlayWindow.setWindowShouldClose(true) 
-proc overlay_loop(self: Overlay): bool {.exportpy.} = not OverlayWindow.windowShouldClose() 
+proc overlay_close(self: Overlay) {.exportpy.} = 
+  OverlayWindow.setWindowShouldClose(true)
+
+proc overlay_loop(self: Overlay): bool {.exportpy.} = 
+  not OverlayWindow.windowShouldClose()
+
+proc overlay_set_pos(self: Overlay, x, y: int32) {.exportpy.} =
+  SetWindowPos(self.hwnd, -1, x, y, 0, 0, 0x0001)
 
 #[
   bitmap font rendering
@@ -325,8 +333,6 @@ proc box(x, y, width, height, lineWidth: float, color: array[0..2, float32]) {.e
 
 proc alpha_box(x, y, width, height: float, color, outlineColor: array[0..2, float32], alpha: float) {.exportpy.} =
   box(x, y, width, height, 1.0, outlineColor)
-  glEnable(GL_BLEND)
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
   glBegin(GL_POLYGON)
   glColor4f(color[0], color[1], color[2], alpha)
   glVertex2f(x, y)
@@ -334,7 +340,6 @@ proc alpha_box(x, y, width, height: float, color, outlineColor: array[0..2, floa
   glVertex2f(x + width, y + height)
   glVertex2f(x, y + height)
   glEnd()
-  glDisable(GL_BLEND)
 
 proc line(x1, y1, x2, y2, lineWidth: float, color: array[0..2, float32]) {.exportpy.} =
   glLineWidth(lineWidth)
@@ -349,8 +354,6 @@ proc dashed_line(x1, y1, x2, y2, lineWidth: float, color: array[0..2, float32], 
   glLineStipple(factor, fromBin[uint16](pattern))
   glLineWidth(lineWidth)
   glEnable(GL_LINE_STIPPLE)
-  glEnable(GL_BLEND)
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
   glBegin(GL_LINES)
   glColor4f(color[0], color[1], color[2], alpha)
@@ -382,15 +385,12 @@ proc rad_circle(x, y, radius: float, value: int, color: array[0..2, float32]) {.
   glEnd()
 
 proc triangle(x1, y1, x2, y2, x3, y3: float, color: array[0..2, float32], alpha: float) {.exportpy.} =
-  glEnable(GL_BLEND)
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
   glBegin(GL_POLYGON)
   glColor4f(color[0], color[1], color[2], alpha)
   glVertex2f(x1, y1)
   glVertex2f(x2, y2)
   glVertex2f(x3, y3)
   glEnd()
-  glDisable(GL_BLEND)
 
 #[
   vectors

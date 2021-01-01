@@ -61,49 +61,70 @@ def main():
             except:
                 continue
 
-            ent_buffer = read_ints(mem, read_int(mem, Pointer.entity_list), player_count)[1:]
+            ent_buffer = read_ints(
+                mem, read_int(mem, Pointer.entity_list), player_count
+            )[1:]
             for addr in ent_buffer:
                 try:
                     ent_obj = Entity(addr, mem)
-                    ent_obj.info["pos2d"] = wts_ogl(overlay, v_matrix, ent_obj.info["pos3d"])
+                    ent_obj.info["pos2d"] = wts_ogl(
+                        overlay, v_matrix, ent_obj.info["pos3d"]
+                    )
                 except:
                     continue
 
                 if ent_obj.info["pos2d"] and ent_obj.info["hp"] > 0:
-                    ent_color = rgb("blue") if ent_obj.info['team'] == 1 else rgb("red")
+                    ent_color = rgb("blue") if ent_obj.info["team"] == 1 else rgb("red")
 
-                    circle(ent_obj.info["pos2d"]["x"] - 10, ent_obj.info["pos2d"]["y"], 3, ent_color)
+                    circle(
+                        ent_obj.info["pos2d"]["x"] - 10,
+                        ent_obj.info["pos2d"]["y"],
+                        3,
+                        ent_color,
+                    )
                     font_print(
-                        font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"],
+                        font,
+                        ent_obj.info["pos2d"]["x"],
+                        ent_obj.info["pos2d"]["y"],
                         ent_obj.info["name"],
-                        rgb("white")
+                        rgb("white"),
                     )
                     font_print(
-                        font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 13,
+                        font,
+                        ent_obj.info["pos2d"]["x"],
+                        ent_obj.info["pos2d"]["y"] - 13,
                         f"Team: {ent_obj.info['team']}",
-                        ent_color
+                        ent_color,
                     )
                     font_print(
-                        font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 26,
+                        font,
+                        ent_obj.info["pos2d"]["x"],
+                        ent_obj.info["pos2d"]["y"] - 26,
                         f"Health: {ent_obj.info['hp']}",
-                        rgb("white")
+                        rgb("white"),
                     )
                     font_print(
-                        font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 39,
+                        font,
+                        ent_obj.info["pos2d"]["x"],
+                        ent_obj.info["pos2d"]["y"] - 39,
                         f"Armor:  {ent_obj.info['armor']}",
-                        rgb("white")
+                        rgb("white"),
                     )
                     font_print(
-                        font, ent_obj.info["pos2d"]["x"], ent_obj.info["pos2d"]["y"] - 52,
+                        font,
+                        ent_obj.info["pos2d"]["x"],
+                        ent_obj.info["pos2d"]["y"] - 52,
                         f"Distance:  {int(vec3_distance(ent_obj.info['pos3d'], local_ent.info['pos3d']))}",
-                        rgb("white")
+                        rgb("white"),
                     )
 
         overlay_update(overlay)
 
         # 35: END
-        if key_pressed(35): 
+        if key_pressed(35):
             overlay_close(overlay)
+
+    overlay_deinit(overlay)
 
 
 if __name__ == "__main__":

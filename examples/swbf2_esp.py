@@ -21,7 +21,9 @@ class Offsets:
 
 try:
     mem = process_by_name("starwarsbattlefrontii.exe")
-    render_view = read_int(mem, read_int(mem, Offsets.GameRenderer) + Offsets.RenderView)
+    render_view = read_int(
+        mem, read_int(mem, Offsets.GameRenderer) + Offsets.RenderView
+    )
     game_context = read_int(mem, Offsets.ClientGameContext)
     player_manager = read_int(mem, game_context + Offsets.PlayerManager)
     overlay = overlay_init()
@@ -39,7 +41,7 @@ def wts(pos, vm):
 
     return vec2(
         overlay["midX"] + overlay["midX"] * x / w,
-        overlay["midY"] + overlay["midY"] * y / w
+        overlay["midY"] + overlay["midY"] * y / w,
     )
 
 
@@ -73,14 +75,16 @@ class Entity:
         self.alive = self.health > 0
         if not self.alive:
             return
-            
+
         try:
             soldier = read_uint(mem, controlled + Offsets.SoldierPrediction)
             self.pos3d = read_vec3(mem, soldier + Offsets.Position)
-            self.headpos3d = vec3(self.pos3d["x"], self.pos3d["y"] + self.height - 18.5, self.pos3d["z"])
+            self.headpos3d = vec3(
+                self.pos3d["x"], self.pos3d["y"] + self.height - 18.5, self.pos3d["z"]
+            )
         except:
             return
-        
+
         self.visible = read_byte(mem, controlled + Offsets.Occluded) == 0
 
         return self
@@ -96,6 +100,7 @@ def ent_loop():
                 if e:
                     yield e
 
+
 def main():
     set_foreground("STAR WARS Battlefront II")
     while overlay_loop(overlay):
@@ -107,7 +112,7 @@ def main():
             for ent in ent_loop():
                 if ent.team == local_player.team:
                     continue
-                
+
                 try:
                     ent.pos2d = wts(ent.pos3d, vm)
                     ent.headpos2d = wts(ent.headpos3d, vm)
@@ -118,17 +123,20 @@ def main():
                 width = head / 2
                 center = width / -2
                 alpha_box(
-                    ent.pos2d["x"] + center, ent.pos2d["y"],
+                    ent.pos2d["x"] + center,
+                    ent.pos2d["y"],
                     width,
                     head + 5,
                     rgb("green") if ent.visible else rgb("red"),
                     rgb("black"),
-                    0.15 
+                    0.15,
                 )
 
         overlay_update(overlay)
-        if key_pressed(35): 
+        if key_pressed(35):
             overlay_close(overlay)
+
+    overlay_deinit(overlay)
 
 
 if __name__ == "__main__":

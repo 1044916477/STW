@@ -37,16 +37,14 @@ def main():
     ammo_dec = aob_scan(
         ac_proc,
         "FF 0E 57 8B 7C ? ? 8D 74 ? ? E8 ? ? ? ? 5F 5E B0 ? 5B 8B E5 5D C2 ? ? CC CC CC CC CC CC CC CC CC CC CC CC 55",
-        ac_proc["modules"]["ac_client.exe"]
+        ac_proc["modules"]["ac_client.exe"],
     )
     if ammo_dec:
         nop_code(ac_proc, ammo_dec, 2)
 
     # Speedbullets?
     speed_bullets = aob_scan(
-        ac_proc,
-        "89 0A 8B 76 14",
-        ac_proc["modules"]["ac_client.exe"]
+        ac_proc, "89 0A 8B 76 14", ac_proc["modules"]["ac_client.exe"]
     )
     if speed_bullets:
         nop_code(ac_proc, speed_bullets, 2)
@@ -64,12 +62,26 @@ def main():
     set_foreground("AssaultCube")
     cross_size = 100
     while overlay_loop(overlay):
-        line(overlay["midX"] + cross_size, overlay["midY"], overlay["midX"] - cross_size, overlay["midY"], 1, [0, 255, 0])
-        line(overlay["midX"], overlay["midY"] + cross_size, overlay["midX"], overlay["midY"] - cross_size, 1, [0, 255, 0])
+        line(
+            overlay["midX"] + cross_size,
+            overlay["midY"],
+            overlay["midX"] - cross_size,
+            overlay["midY"],
+            1,
+            [0, 255, 0],
+        )
+        line(
+            overlay["midX"],
+            overlay["midY"] + cross_size,
+            overlay["midX"],
+            overlay["midY"] - cross_size,
+            1,
+            [0, 255, 0],
+        )
         circle(overlay["midX"], overlay["midY"], 5, [255, 0, 0])
 
         overlay_update(overlay)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
