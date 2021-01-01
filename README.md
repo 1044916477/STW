@@ -52,7 +52,7 @@
   overlay_close(Overlay)
   overlay_deinit()
   overlay_loop(Overlay) -> bool
-  overlay_set_pos(Overlay, x, y)
+  overlay_set_pos(Overlay, x, y: int)
   
 -- Drawings:
   font_init(height: int, fontName: string) -> Font
