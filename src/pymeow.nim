@@ -460,13 +460,17 @@ proc vec3_distance(a, b: Vec3): float32 {.exportpy.} =
 proc vec2_closest(a: Vec2, b: varargs[Vec2]): Vec2 {.exportpy.} =
   var closest_value = float32.high
   for v in b:
-    if a.vec2_distance(v) < closest_value:
+    let dist = a.vec2_distance(v)
+    if dist < closest_value:
       result = v
+      closest_value = dist
 proc vec3_closest(a: Vec3, b: varargs[Vec3]): Vec3 {.exportpy.} =
   var closest_value = float32.high
   for v in b:
+    let dist = a.vec3_distance(v) 
     if a.vec3_distance(v) < closest_value:
       result = v
+      closest_value = dist
 #[
   misc
 ]#
