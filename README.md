@@ -13,6 +13,9 @@
 ## [SWBF2 ESP](https://github.com/Sann0/PyMeow/blob/master/examples/swbf2_esp.py)
 ![Alt text](https://i.ibb.co/tq49DD1/swbf-py.png)
 
+## [Cube2: Sauberbraten ESP + Aimbot](https://github.com/Sann0/PyMeow/blob/master/examples/sauerbraten_espaim.py)
+[<img src="https://img.youtube.com/vi/7F_16FQURGc/maxresdefault.jpg" width="50%">](https://youtu.be/7F_16FQURGc)
+
 ## API:
 ```
 -- Memory:

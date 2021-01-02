@@ -1,4 +1,5 @@
 import sys
+from math import atan2, asin, pi
 from pymeow import *
 
 
@@ -13,12 +14,14 @@ class Offsets:
     State = 0x77
     Name = 0x274
     Team = 0x378
+    ViewAngles = 0x3C
 
 
 try:
     mem = process_by_name("sauerbraten.exe")
     base = mem["baseaddr"]
     overlay = overlay_init("Cube 2: Sauerbraten")
+    local = None
 except Exception as e:
     sys.exit(e)
 
@@ -52,6 +55,7 @@ def get_ents():
         ent_buffer = read_ints64(mem, read_int64(mem, base + Offsets.EntityList), player_count)
 
         try:
+            global local
             local = Entity(ent_buffer[0])
         except:
             return
@@ -73,6 +77,16 @@ def get_ents():
                 continue
 
 
+def aim_bot(ent_vecs):
+    src = local.hpos3d
+    dst = vec3_closest(src, ent_vecs)
+
+    angle = vec2()
+    angle["x"] = -atan2(dst["x"] - src["x"], dst["y"] - src["y"]) / pi * 180.0
+    angle["y"] = asin((dst["z"] - src["z"]) / vec3_distance(src, dst)) * (180.0 / pi)
+    write_vec2(mem, local.addr + Offsets.ViewAngles, angle)
+
+
 def main():
     set_foreground("Cube 2: Sauerbraten")
     font = font_init(10, "Tahoma")
@@ -82,8 +96,10 @@ def main():
         if key_pressed(35):
             overlay_close(overlay)
 
+        ent_vecs = list()
 
         for e in get_ents():
+            ent_vecs.append(e.hpos3d)
             head = e.fpos2d["y"] - e.hpos2d["y"]
             width = head / 2
             center = width / -2
@@ -119,6 +135,17 @@ def main():
                 str(e.distance),
                 rgb("white")
             )
+            dashed_line(
+                overlay["midX"],
+                0,
+                e.fpos2d["x"],
+                e.fpos2d["y"],
+                1,
+                rgb("orange"),
+            )
+
+        if key_pressed(88) and ent_vecs:
+            aim_bot(ent_vecs)
 
     overlay_deinit(overlay)
 
