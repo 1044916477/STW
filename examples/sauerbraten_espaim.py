@@ -66,7 +66,7 @@ def get_ents():
             try:
                 ent = Entity(e)
                 if ent.alive:
-                    if is_team_game and ent.team == local.team:
+                    if is_team_game() and ent.team == local.team:
                         continue
 
                     ent.hpos2d = wts_ogl(overlay, vm, ent.hpos3d)
