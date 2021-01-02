@@ -25,8 +25,12 @@
   read_ints(Process, address: int, size: int) -> int array
   read_uint(Process, address: int) -> int
   read_uints(Process, address: int, size: int) -> int array
+  read_int64(Process, address: int) -> int64
+  read_ints64(Process, address: int, size: int) -> int64 array
   read_float(Process, address: int) -> float
   read_floats(Process, address: int, size: int) -> float array
+  read_float64(Process, address: int) -> float64
+  read_floats64(Process, address: int, size: int) -> float64 array
   read_byte(Process, address: int) -> byte
   read_bytes(Process, address: int, size: int) -> byte array
   read_vec2(Process, address: int) -> vec2

@@ -198,11 +198,15 @@ proc read_string(self: Process, address: ByteAddress): string {.exportpy.} =
   let r = self.read(address, array[0..100, char])
   $cast[cstring](r[0].unsafeAddr)
 proc read_int(self: Process, address: ByteAddress): int32 {.exportpy.} = self.read(address, int32)
-proc read_uint(self: Process, address: ByteAddress): uint32 {.exportpy.} = self.read(address, uint32)
 proc read_ints(self: Process, address: ByteAddress, size: int32): seq[int32] {.exportpy.} = self.readSeq(address, size, int32)
+proc read_int64(self: Process, address: ByteAddress): int64 {.exportpy.} = self.read(address, int64)
+proc read_ints64(self: Process, address: ByteAddress, size: int32): seq[int64] {.exportpy.} = self.readSeq(address, size, int64)
+proc read_uint(self: Process, address: ByteAddress): uint32 {.exportpy.} = self.read(address, uint32)
 proc read_uints(self: Process, address: ByteAddress, size: int32): seq[uint32] {.exportpy.} = self.readSeq(address, size, uint32)
 proc read_float(self: Process, address: ByteAddress): float32 {.exportpy.} = self.read(address, float32)
 proc read_floats(self: Process, address: ByteAddress, size: int32): seq[float32] {.exportpy.} = self.readSeq(address, size, float32)
+proc read_float64(self: Process, address: ByteAddress): float64 {.exportpy.} = self.read(address, float64)
+proc read_floats64(self: Process, address: ByteAddress, size: int32): seq[float64] {.exportpy.} = self.readSeq(address, size, float64)
 proc read_byte(self: Process, address: ByteAddress): byte {.exportpy.} = self.read(address, byte)
 proc read_bytes(self: Process, address: ByteAddress, size: int32): seq[byte] {.exportpy.} = self.readSeq(address, size, byte)
 proc read_vec2(self: Process, address: ByteAddress): Vec2 {.exportpy.} = self.read(address, Vec2)
@@ -512,7 +516,7 @@ proc wts_ogl(self: Overlay, matrix: array[0..15, float32], pos: Vec3): Vec2 {.ex
   clip.z = pos.x * matrix[3] + pos.y * matrix[7] + pos.z * matrix[11] + matrix[15]
 
   if clip.z < 0.1:
-    raise newException(Exception, "WTS Error")
+    raise newException(Exception, "WTS")
 
   ndc.x = clip.x / clip.z
   ndc.y = clip.y / clip.z
@@ -531,7 +535,7 @@ proc wts_dx(self: Overlay, matrix: array[0..15, float32], pos: Vec3): Vec2 {.exp
   clip.z = pos.x * matrix[12] + pos.y * matrix[13] + pos.z * matrix[14] + matrix[15]
 
   if clip.z < 0.1:
-    raise newException(Exception, "WTS Error")
+    raise newException(Exception, "WTS")
 
   ndc.x = clip.x / clip.z
   ndc.y = clip.y / clip.z
