@@ -17,20 +17,6 @@ class Offsets:
     ViewAngles = 0x3C
 
 
-try:
-    mem = process_by_name("sauerbraten.exe")
-    base = mem["baseaddr"]
-    overlay = overlay_init("Cube 2: Sauerbraten")
-    local = None
-except Exception as e:
-    sys.exit(e)
-
-
-def is_team_game():
-    return read_byte(mem, base + Offsets.GameMode) in \
-        [2, 4, 6, 8, 10, 11, 12, 17, 13, 14, 18, 15, 16, 19, 20, 21, 22]
-
-
 class Entity:
     def __init__(self, addr):
         self.addr = addr
@@ -47,6 +33,20 @@ class Entity:
         self.distance = 0.0
         self.hpos2d = vec2()
         self.fpos2d = vec2()
+
+
+try:
+    mem = process_by_name("sauerbraten.exe")
+    base = mem["baseaddr"]
+    overlay = overlay_init("Cube 2: Sauerbraten")
+    local = None
+except Exception as e:
+    sys.exit(e)
+
+
+def is_team_game():
+    return read_byte(mem, base + Offsets.GameMode) in \
+        [2, 4, 6, 8, 10, 11, 12, 17, 13, 14, 18, 15, 16, 19, 20, 21, 22]
 
 
 def get_ents():
