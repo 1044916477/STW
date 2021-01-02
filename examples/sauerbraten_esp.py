@@ -98,7 +98,6 @@ def main():
                 rgb("black"),
                 0.15,
             )
-
             font_print(
                 font,
                 font_x,
@@ -106,7 +105,6 @@ def main():
                 e.name,
                 rgb("white")
             )
-
             font_print(
                 font,
                 font_x,
