@@ -1,6 +1,6 @@
 #[
   PyMeow - Python Game Hacking Library
-  v1.12
+  v1.14
   Meow @ 2020
 ]#
 
