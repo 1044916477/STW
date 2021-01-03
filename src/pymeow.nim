@@ -123,10 +123,9 @@ proc writeArray[T](self: Process, address: ByteAddress, data: openArray[T]) =
     memoryErr("Write", address)
 
 proc dma_addr(self: Process, baseAddr: ByteAddress, offsets: openArray[int]): ByteAddress {.exportpy.} =
-  result = self.read(baseAddr, ByteAddress)
+  result = self.read(baseAddr, int32)
   for o in offsets:
-    inc result, o
-    result = self.read(result, ByteAddress)
+    result = self.read(result + o, int32)
 
 proc readSeq(self: Process, address: ByteAddress, size: SIZE_T,  t: typedesc = byte): seq[t] =
   result = newSeq[t](size)
