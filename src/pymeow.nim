@@ -17,7 +17,7 @@ var OverlayWindow: GLFWWindow
 type
   Mod = object
     baseaddr: ByteAddress
-    basesize*: DWORD
+    basesize: DWORD
 
   Process = object
     name: string
