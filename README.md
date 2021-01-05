@@ -2,16 +2,16 @@
 ##### Python Library for external Game Hacking created with [Nim](https://nim-lang.org)
 
 ## [CSGo ESP](https://github.com/Sann0/PyMeow/blob/master/examples/csgo_esp.py):
-![Alt text](https://i.ibb.co/jr5BNYx/csgo-py.png)
+![Alt text](https://github.com/Sann0/PyMeow/blob/master/examples/screenshots/csgo_py.png)
 
 ## [Assault Cube ESP](https://github.com/Sann0/PyMeow/blob/master/examples/ac_esp.py)
-![Alt text](https://i.ibb.co/dcZ2htV/ac2-py.png)
+![Alt text](https://github.com/Sann0/PyMeow/blob/master/examples/screenshots/ac2_py.png)
 
 ## [Assault Cube Mem Hacks](https://github.com/Sann0/PyMeow/blob/master/examples/ac_hacks.py):
-![Alt text](https://i.ibb.co/ZfdgcMS/ac-py.png)
+![Alt text](https://github.com/Sann0/PyMeow/blob/master/examples/screenshots/ac_py.png)
 
 ## [SWBF2 ESP](https://github.com/Sann0/PyMeow/blob/master/examples/swbf2_esp.py)
-![Alt text](https://i.ibb.co/tq49DD1/swbf-py.png)
+![Alt text](https://github.com/Sann0/PyMeow/blob/master/examples/screenshots/swbf_py.png)
 
 ## [Cube2: Sauberbraten ESP + Aimbot](https://github.com/Sann0/PyMeow/blob/master/examples/sauerbraten_espaim.py)
 [<img src="https://img.youtube.com/vi/7F_16FQURGc/maxresdefault.jpg" width="50%">](https://youtu.be/7F_16FQURGc)
