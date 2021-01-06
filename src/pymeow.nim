@@ -80,7 +80,7 @@ proc process_by_name(name: string): Process {.exportpy.} =
 
   for i in 0..<read div 4:
     var p = pidInfo(pidArray[i])
-    if p.pid != 0 and p.name == name:
+    if p.pid != 0 and name in p.name:
       p.handle = OpenProcess(PROCESS_ALL_ACCESS, 0, p.pid).DWORD
       if p.handle != 0:
         return p
