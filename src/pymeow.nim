@@ -1,6 +1,6 @@
 #[
   PyMeow - Python Game Hacking Library
-  v1.14
+  v1.15
   Meow @ 2020
 ]#
 
@@ -302,9 +302,9 @@ proc font_init(height: int32, fontName: string): Font {.exportpy.} =
   result.fontHDC = wglGetCurrentDC()
 
   let
-    hFont = CreateFont(-(height), 0, 0, 0, FW_BOLD, 0, 0, 0, ANSI_CHARSET,
+    hFont = CreateFont(-(height), 0, 0, 0, FW_DONTCARE, 0, 0, 0, ANSI_CHARSET,
         OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE or
-        DEFAULT_PITCH, cast[LPCWSTR](fontName))
+        DEFAULT_PITCH, cast[cstring](fontName[0].unsafeAddr))
     hOldFont = SelectObject(result.fontHDC, hFont)
 
   result.font = glGenLists(96)
@@ -470,6 +470,7 @@ proc vec3_closest(a: Vec3, b: varargs[Vec3]): Vec3 {.exportpy.} =
     if a.vec3_distance(v) < closest_value:
       result = v
       closest_value = dist
+
 #[
   misc
 ]#
