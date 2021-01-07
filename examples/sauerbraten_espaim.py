@@ -96,7 +96,7 @@ def main():
         if key_pressed(35):
             overlay_close(overlay)
 
-        ents_vecs = list()
+        ent_vecs = list()
 
         for e in get_ents():
             ent_vecs.append(e.hpos3d)
