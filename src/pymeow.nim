@@ -1,11 +1,11 @@
 #[
   PyMeow - Python Game Hacking Library
-  v1.15
+  v1.16
   Meow @ 2020
 ]#
 
 import 
-  tables, re, os, math,
+  tables, regex, os, math,
   strutils, colors
 from strformat import fmt
 
@@ -135,16 +135,10 @@ proc readSeq(self: Process, address: ByteAddress, size: SIZE_T,  t: typedesc = b
     memoryErr("readSeq", address)
 
 proc aob_scan(self: Process, pattern: string, module: Mod = Mod()): ByteAddress {.exportpy.} =
-  let allowed_protections = [
-    PAGE_EXECUTE_READ, PAGE_EXECUTE_READWRITE, 
-    PAGE_READWRITE, PAGE_READONLY
-  ]
-
   var 
     scanBegin, scanEnd: int
     rePattern = re(
-      pattern.toUpper().multiReplace((" ", ""), ("??", "?"), ("?", ".."), ("*", "..")),
-      {reIgnoreCase, reDotAll}
+      pattern.toUpper().multiReplace((" ", ""), ("??", "?"), ("?", ".."), ("*", ".."))
     )
 
   if module.baseaddr != 0:
@@ -164,16 +158,16 @@ proc aob_scan(self: Process, pattern: string, module: Mod = Mod()): ByteAddress 
     curAddr += mbi.RegionSize.int
     VirtualQueryEx(self.handle, cast[LPCVOID](curAddr), mbi.addr, cast[SIZE_T](sizeof(mbi)))
 
-    if mbi.State != MEM_COMMIT or mbi.State notin allowed_protections: continue
+    if mbi.State != MEM_COMMIT or mbi.State == PAGE_NOACCESS: continue
 
     var oldProt: DWORD
     VirtualProtectEx(self.handle, cast[LPCVOID](curAddr), mbi.RegionSize, PAGE_EXECUTE_READWRITE, oldProt.addr)
     let byteString = cast[string](self.readSeq(cast[ByteAddress](mbi.BaseAddress), mbi.RegionSize)).toHex()
     VirtualProtectEx(self.handle, cast[LPCVOID](curAddr), mbi.RegionSize, oldProt, nil)
 
-    let r = byteString.findBounds(rePattern)
-    if r.first != -1:
-      return r.first div 2 + curAddr
+    let r = byteString.findAllBounds(rePattern)
+    if r.len != 0:
+      return r[0].a div 2 + curAddr
 
 proc nop_code(self: Process, address: ByteAddress, length: int = 1) {.exportpy.} =
   var oldProt: int32

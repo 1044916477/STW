@@ -36,17 +36,17 @@ def main():
     # No decrement of ammo
     ammo_dec = aob_scan(
         ac_proc,
-        "FF 0E 57 8B 7C ? ? 8D 74 ? ? E8 ? ? ? ? 5F 5E B0 ? 5B 8B E5 5D C2 ? ? CC CC CC CC CC CC CC CC CC CC CC CC 55",
+        "FF 0E 57 8B 7C 24 14 8D 74 24 28 E8 ? ? ? ? 5F 5E B0 01 5B 8B E5 5D C2 04 00 CC CC CC CC CC CC CC CC CC CC CC CC 55",
         ac_proc["modules"]["ac_client.exe"],
     )
     if ammo_dec:
         nop_code(ac_proc, ammo_dec, 2)
 
-    # Speedbullets?
-    speed_bullets = aob_scan(
+    # Rapid fire
+    rapid_fire = aob_scan(
         ac_proc, "89 0A 8B 76 14", ac_proc["modules"]["ac_client.exe"]
     )
-    if speed_bullets:
+    if rapid_fire:
         nop_code(ac_proc, speed_bullets, 2)
 
     # Health Hack
@@ -56,31 +56,6 @@ def main():
     write_int(ac_proc, local_addr + Offsets.armor, 1337)
 
     close(ac_proc)
-
-    # Fancy Crosshair
-    overlay = overlay_init("AssaultCube")
-    set_foreground("AssaultCube")
-    cross_size = 100
-    while overlay_loop(overlay):
-        line(
-            overlay["midX"] + cross_size,
-            overlay["midY"],
-            overlay["midX"] - cross_size,
-            overlay["midY"],
-            1,
-            [0, 255, 0],
-        )
-        line(
-            overlay["midX"],
-            overlay["midY"] + cross_size,
-            overlay["midX"],
-            overlay["midY"] - cross_size,
-            1,
-            [0, 255, 0],
-        )
-        circle(overlay["midX"], overlay["midY"], 5, [255, 0, 0])
-
-        overlay_update(overlay)
 
 
 if __name__ == "__main__":
