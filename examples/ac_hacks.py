@@ -26,7 +26,11 @@ def main():
     write_int(ac_proc, ac_base + Offsets.recoil, 0)
     page_protection(ac_proc, ac_base + Offsets.recoil, old_prot)
 
-    # Ammo Hacks
+    # Health / Armor
+    write_int(ac_proc, local_addr + Offsets.health, 1337)
+    write_int(ac_proc, local_addr + Offsets.armor, 1337)
+
+    # Ammo
     write_int(ac_proc, local_addr + Offsets.rifle_ammo, 1337)
     write_int(ac_proc, local_addr + Offsets.rifle_clip, 1337)
     write_int(ac_proc, local_addr + Offsets.pistol_ammo, 1337)
@@ -48,12 +52,6 @@ def main():
     )
     if rapid_fire:
         nop_code(ac_proc, speed_bullets, 2)
-
-    # Health Hack
-    write_int(ac_proc, local_addr + Offsets.health, 1337)
-
-    # Armor Hack
-    write_int(ac_proc, local_addr + Offsets.armor, 1337)
 
     close(ac_proc)
 
