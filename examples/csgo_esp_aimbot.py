@@ -8,11 +8,11 @@ END: Exit
 
 
 class Offsets:
-    dwEntityList = 0x4D9FBD4
-    dwLocalPlayer = 0xD882BC
-    dwViewMatrix = 0x4D914D4
-    dwGlowObjectManager = 0x52E81B0
-    dwRadarBase = 0x51D494C
+    dwEntityList = 0x4DA2E14
+    dwLocalPlayer = 0xD8B2BC
+    dwViewMatrix = 0x4D94714
+    dwGlowObjectManager = 0x52EB3F8
+    dwRadarBase = 0x51D7B8C
 
     m_bDormant = 0xED
     m_iHealth = 0x100
