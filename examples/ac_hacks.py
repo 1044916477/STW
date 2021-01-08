@@ -51,7 +51,7 @@ def main():
         ac_proc, "89 0A 8B 76 14", ac_proc["modules"]["ac_client.exe"]
     )
     if rapid_fire:
-        nop_code(ac_proc, speed_bullets, 2)
+        nop_code(ac_proc, rapid_fire, 2)
 
     close(ac_proc)
 

@@ -21,6 +21,7 @@
 -- Memory:
   process_by_name(name: string) -> Process
   wait_for_process(name: string) -> Process
+  enumerate_processes() -> Process (iterator)
   close(Process) -> bool
 
   read_string(Process, address: int) -> string
