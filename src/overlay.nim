@@ -28,7 +28,7 @@ proc overlay_init(target: string = "Fullscreen", borderOffset: int32 = 25): Over
   glfwWindowHint(GLFWDecorated, GLFWFalse)
   glfwWindowHint(GLFWResizable, GLFWFalse)
   glfwWindowHint(GLFWTransparentFramebuffer, GLFWTrue)
-  glfwWindowHint(GLFWSamples, 8)
+  glfwWindowHint(GLFWSamples, 30)
 
   if target == "Fullscreen":
     let videoMode = getVideoMode(glfwGetPrimaryMonitor())
