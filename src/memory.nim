@@ -163,6 +163,13 @@ proc nop_code(self: Process, address: ByteAddress, length: int = 1) {.exportpy.}
     self.write(address + i, 0x90.byte)
   discard VirtualProtectEx(self.handle, cast[LPCVOID](address), length, oldProt, nil)
 
+proc patch_bytes(self: Process, address: ByteAddress, data: openArray[byte]) {.exportpy.} =
+  var oldProt: int32
+  discard VirtualProtectEx(self.handle, cast[LPCVOID](address), data.len, 0x40, oldProt.addr)
+  for i, b in data:
+    self.write(address + i, b)
+  discard VirtualProtectEx(self.handle, cast[LPCVOID](address), data.len, oldProt, nil)
+
 proc inject_dll(self: Process, dllPath: string) {.exportpy.} =
   let vPtr = VirtualAllocEx(self.handle, nil, dllPath.len(), MEM_RESERVE or MEM_COMMIT, PAGE_EXECUTE_READWRITE)
   WriteProcessMemory(self.handle, vPtr, dllPath[0].unsafeAddr, dllPath.len, nil)
